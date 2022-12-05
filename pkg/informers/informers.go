@@ -17,13 +17,14 @@ limitations under the License.
 package informers
 
 import (
+	"reflect"
+	"time"
+
 	ext "github.com/gocrane/api/pkg/generated/clientset/versioned"
 	cranev1informer "github.com/gocrane/api/pkg/generated/informers/externalversions"
 	extinformers "github.com/gocrane/api/pkg/generated/informers/externalversions"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/dynamic/dynamicinformer"
-	"reflect"
-	"time"
 
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
 	apiextensionsinformers "k8s.io/apiextensions-apiserver/pkg/client/informers/externalversions"
@@ -31,8 +32,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	cranev1 "github.com/gocrane/api/pkg/generated/clientset/versioned"
-	"kubesphere.io/schedule/pkg/client/clientset/versioned"
-	ksinformers "kubesphere.io/schedule/pkg/client/informers/externalversions"
+	"kubesphere.io/scheduling/pkg/client/clientset/versioned"
+	ksinformers "kubesphere.io/scheduling/pkg/client/informers/externalversions"
 )
 
 // default re-sync period for all informer factories

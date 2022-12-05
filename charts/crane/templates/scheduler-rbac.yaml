@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: scheduler
+  name: crane-scheduler
   labels:
     {{- include "crane.labels" . | nindent 4 }}
 rules:
@@ -116,8 +116,12 @@ rules:
   - persistentvolumeclaims
   - persistentvolumes
   verbs:
+  - create
+  - delete
   - get
   - list
+  - patch
+  - update
   - watch
 - apiGroups:
   - authentication.k8s.io
@@ -153,13 +157,13 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: scheduler
+  name: crane-scheduler
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: scheduler
+  name: crane-scheduler
 subjects:
 - kind: ServiceAccount
-  name: scheduler
+  name: crane-scheduler
   namespace: {{ .Release.Namespace }}
 {{ end }}

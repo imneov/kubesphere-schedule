@@ -14,13 +14,14 @@
 package kapis
 
 import (
-	"github.com/emicklei/go-restful"
-	"github.com/stretchr/testify/assert"
 	"io"
-	"kubesphere.io/schedule/pkg/server/errors"
 	"net/http/httptest"
 	"reflect"
 	"testing"
+
+	"github.com/emicklei/go-restful"
+	"github.com/stretchr/testify/assert"
+	"kubesphere.io/scheduling/pkg/server/errors"
 )
 
 func TestIgnoreEOF(t *testing.T) {

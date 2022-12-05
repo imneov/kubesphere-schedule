@@ -20,8 +20,8 @@ package v1alpha1
 
 import (
 	rest "k8s.io/client-go/rest"
-	v1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
-	"kubesphere.io/schedule/pkg/client/clientset/versioned/scheme"
+	v1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
+	"kubesphere.io/scheduling/pkg/client/clientset/versioned/scheme"
 )
 
 type ScheduleV1alpha1Interface interface {
@@ -29,7 +29,7 @@ type ScheduleV1alpha1Interface interface {
 	AnalysisTasksGetter
 }
 
-// ScheduleV1alpha1Client is used to interact with features provided by the schedule.kubesphere.io group.
+// ScheduleV1alpha1Client is used to interact with features provided by the scheduling.kubesphere.io group.
 type ScheduleV1alpha1Client struct {
 	restClient rest.Interface
 }

@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"kubesphere.io/schedule/pkg/utils/net"
+	"kubesphere.io/scheduling/pkg/utils/net"
 )
 
 type ServerRunOptions struct {

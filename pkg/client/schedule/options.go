@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"kubesphere.io/schedule/pkg/utils/reflectutils"
+	"kubesphere.io/scheduling/pkg/utils/reflectutils"
 )
 
 type Options struct {

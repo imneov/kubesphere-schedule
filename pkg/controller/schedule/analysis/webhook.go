@@ -25,8 +25,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/klog"
-	schedulev1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
-	"kubesphere.io/schedule/pkg/constants"
+	schedulev1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
+	"kubesphere.io/scheduling/pkg/constants"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )

@@ -25,8 +25,8 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/klog"
 
-	"kubesphere.io/schedule/pkg/apiserver/request"
-	"kubesphere.io/schedule/pkg/server/errors"
+	"kubesphere.io/scheduling/pkg/apiserver/request"
+	"kubesphere.io/scheduling/pkg/server/errors"
 )
 
 // WithKubeAPIServer proxy request to kubernetes service if requests path starts with /api

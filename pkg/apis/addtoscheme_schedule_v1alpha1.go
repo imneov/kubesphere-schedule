@@ -17,7 +17,7 @@ limitations under the License.
 package apis
 
 import (
-	"kubesphere.io/schedule/api/schedule/v1alpha1"
+	"kubesphere.io/scheduling/api/schedule/v1alpha1"
 )
 
 func init() {

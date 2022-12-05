@@ -15,22 +15,23 @@ package v1alpha1
 
 import (
 	"fmt"
+
 	"k8s.io/apimachinery/pkg/api/errors"
-	servererr "kubesphere.io/schedule/pkg/server/errors"
+	servererr "kubesphere.io/scheduling/pkg/server/errors"
 
 	restful "github.com/emicklei/go-restful"
 	ext "github.com/gocrane/api/pkg/generated/clientset/versioned"
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
-	"kubesphere.io/schedule/api"
-	"kubesphere.io/schedule/api/schedule/v1alpha1"
-	"kubesphere.io/schedule/pkg/apiserver/query"
-	"kubesphere.io/schedule/pkg/client/clientset/versioned"
-	scheduleoptions "kubesphere.io/schedule/pkg/client/schedule"
-	"kubesphere.io/schedule/pkg/constants"
-	"kubesphere.io/schedule/pkg/informers"
-	"kubesphere.io/schedule/pkg/models/schedule"
+	"kubesphere.io/scheduling/api"
+	"kubesphere.io/scheduling/api/schedule/v1alpha1"
+	"kubesphere.io/scheduling/pkg/apiserver/query"
+	"kubesphere.io/scheduling/pkg/client/clientset/versioned"
+	scheduleoptions "kubesphere.io/scheduling/pkg/client/schedule"
+	"kubesphere.io/scheduling/pkg/constants"
+	"kubesphere.io/scheduling/pkg/informers"
+	"kubesphere.io/scheduling/pkg/models/schedule"
 )
 
 var (

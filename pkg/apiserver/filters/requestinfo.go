@@ -23,7 +23,7 @@ import (
 
 	"k8s.io/apiserver/pkg/endpoints/handlers/responsewriters"
 
-	"kubesphere.io/schedule/pkg/apiserver/request"
+	"kubesphere.io/scheduling/pkg/apiserver/request"
 )
 
 func WithRequestInfo(handler http.Handler, resolver request.RequestInfoResolver) http.Handler {

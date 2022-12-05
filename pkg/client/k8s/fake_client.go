@@ -23,7 +23,7 @@ import (
 	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"kubesphere.io/schedule/pkg/client/clientset/versioned"
+	"kubesphere.io/scheduling/pkg/client/clientset/versioned"
 )
 
 type FakeClient struct {

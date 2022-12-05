@@ -17,7 +17,7 @@ spec:
       labels:
         component: scheduler
     spec:
-      serviceAccountName: scheduler
+      serviceAccountName: crane-scheduler
       containers:
       - command:
         - /scheduler

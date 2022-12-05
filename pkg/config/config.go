@@ -27,12 +27,9 @@ import (
 	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/klog"
-
-	"kubesphere.io/schedule/pkg/constants"
-
-	"kubesphere.io/schedule/pkg/client/k8s"
-
-	"kubesphere.io/schedule/pkg/client/schedule"
+	"kubesphere.io/scheduling/pkg/client/k8s"
+	"kubesphere.io/scheduling/pkg/client/schedule"
+	"kubesphere.io/scheduling/pkg/constants"
 )
 
 // Package config saves configuration for running KubeSphere components
@@ -50,9 +47,9 @@ import (
 //
 // At the same time, have command line flags like following:
 //
-// --mysql-host mysql.schedule-system.svc --mysql-username king --mysql-password 1234
+// --mysql-host mysql.scheduling-system.svc --mysql-username king --mysql-password 1234
 //
-// We will use `king:1234@mysql.schedule-system.svc` from command line flags rather
+// We will use `king:1234@mysql.scheduling-system.svc` from command line flags rather
 // than `root:password@mysql.kubesphere-system.svc` from configuration file,
 // cause command line has higher priority. But if command line flags like following:
 //

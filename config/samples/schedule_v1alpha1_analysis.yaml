@@ -1,12 +1,12 @@
-apiVersion: schedule.kubesphere.io/v1alpha1
+apiVersion: scheduling.kubesphere.io/v1alpha1
 kind: AnalysisTask
 metadata:
   labels:
     app.kubernetes.io/name: analysis
     app.kubernetes.io/instance: analysis-sample
-    app.kubernetes.io/part-of: kubesphere-schedule
+    app.kubernetes.io/part-of: kubesphere-scheduling
     app.kuberentes.io/managed-by: kustomize
-    app.kubernetes.io/created-by: kubesphere-schedule
+    app.kubernetes.io/created-by: kubesphere-scheduling
   name: analysis-sample
 spec:
   type: Namespace

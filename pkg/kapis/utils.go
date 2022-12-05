@@ -18,10 +18,11 @@ package kapis
 
 import (
 	"io"
-	servererr "kubesphere.io/schedule/pkg/server/errors"
 	"net/http"
 	"runtime"
 	"strings"
+
+	servererr "kubesphere.io/scheduling/pkg/server/errors"
 
 	"github.com/emicklei/go-restful"
 	"k8s.io/apimachinery/pkg/api/errors"

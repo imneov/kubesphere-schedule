@@ -3,14 +3,14 @@ COMMIT := $(shell git rev-parse --short HEAD)
 VERSION := dev-$(shell git describe --tags $(shell git rev-list --tags --max-count=1))
 
 DOCKER_REPO ?= kubespheredev
-CONTROLLER_IMG ?= ${DOCKER_REPO}/sechdule-controller:$(VERSION)-$(COMMIT)
-APISERVER_IMG ?= ${DOCKER_REPO}/sechdule-apiserver:$(VERSION)-$(COMMIT)
-TOOLS_IMG ?= ${DOCKER_REPO}/sechdule-tools:$(VERSION)-$(COMMIT)
+CONTROLLER_IMG ?= ${DOCKER_REPO}/scheduling-controller:$(VERSION)-$(COMMIT)
+APISERVER_IMG ?= ${DOCKER_REPO}/scheduling-apiserver:$(VERSION)-$(COMMIT)
+TOOLS_IMG ?= ${DOCKER_REPO}/sechduling-tools:$(VERSION)-$(COMMIT)
 # Produce CRDs that work back to Kubernetes 1.11 (no version conversion)
 CRD_OPTIONS ?= "crd:trivialVersions=true"
 CONTAINER_CLI?=docker
 
-GV="sechdule.kubesphere.io:v1alpha1"
+GV="sechduling.kubesphere.io:v1alpha1"
 
 # Get the currently used golang install path (in GOPATH/bin, unless GOBIN is set)
 ifeq (,$(shell go env GOBIN))
@@ -56,10 +56,10 @@ clientset:
 	./hack/generate_client.sh ${GV}
 
 openapi: openapi-gen
-	openapi-gen -O openapi_generated -i ./api/v1alpha1 -p kubesphere.io/api/sechdule/v1alpha1 -h ./hack/boilerplate.go.txt --report-filename ./api/violation_exceptions.list
+	openapi-gen -O openapi_generated -i ./api/v1alpha1 -p kubesphere.io/api/sechduling/v1alpha1 -h ./hack/boilerplate.go.txt --report-filename ./api/violation_exceptions.list
 
 generate-listers:
-	lister-gen -v=2 --output-base=. --input-dirs kubesphere.io/sechdule/pkg/api/sechdule/v1alpha1  \
+	lister-gen -v=2 --output-base=. --input-dirs kubesphere.io/sechduling/pkg/api/sechduling/v1alpha1  \
  		--output-package pkg/client/listers -h hack/boilerplate.go.txt
 
 # Build the docker image of controller-manager

@@ -20,24 +20,21 @@ import (
 	"crypto/tls"
 	"flag"
 	"fmt"
-	v1 "k8s.io/api/core/v1"
-	"sigs.k8s.io/controller-runtime/pkg/manager"
-
-	schedulev1 "kubesphere.io/schedule/pkg/kapis/schedule/v1alpha1"
-
-	cliflag "k8s.io/component-base/cli/flag"
-	"k8s.io/klog/v2"
-	"kubesphere.io/schedule/pkg/apis"
-	"kubesphere.io/schedule/pkg/apiserver"
-	"kubesphere.io/schedule/pkg/client/clientset/versioned/scheme"
-	apiserverconfig "kubesphere.io/schedule/pkg/config"
-	"kubesphere.io/schedule/pkg/informers"
-	genericoptions "kubesphere.io/schedule/pkg/server/options"
-
 	"net/http"
 	"strings"
 
-	"kubesphere.io/schedule/pkg/client/k8s"
+	v1 "k8s.io/api/core/v1"
+	cliflag "k8s.io/component-base/cli/flag"
+	"k8s.io/klog/v2"
+	"kubesphere.io/scheduling/pkg/apis"
+	"kubesphere.io/scheduling/pkg/apiserver"
+	"kubesphere.io/scheduling/pkg/client/clientset/versioned/scheme"
+	"kubesphere.io/scheduling/pkg/client/k8s"
+	apiserverconfig "kubesphere.io/scheduling/pkg/config"
+	"kubesphere.io/scheduling/pkg/informers"
+	schedulev1 "kubesphere.io/scheduling/pkg/kapis/schedule/v1alpha1"
+	genericoptions "kubesphere.io/scheduling/pkg/server/options"
+	"sigs.k8s.io/controller-runtime/pkg/manager"
 )
 
 type ServerRunOptions struct {

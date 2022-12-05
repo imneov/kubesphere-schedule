@@ -26,10 +26,10 @@ import (
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
-	schedulev1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
-	versioned "kubesphere.io/schedule/pkg/client/clientset/versioned"
-	internalinterfaces "kubesphere.io/schedule/pkg/client/informers/externalversions/internalinterfaces"
-	v1alpha1 "kubesphere.io/schedule/pkg/client/listers/schedule/v1alpha1"
+	schedulev1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
+	versioned "kubesphere.io/scheduling/pkg/client/clientset/versioned"
+	internalinterfaces "kubesphere.io/scheduling/pkg/client/informers/externalversions/internalinterfaces"
+	v1alpha1 "kubesphere.io/scheduling/pkg/client/listers/schedule/v1alpha1"
 )
 
 // AnalysisTaskInformer provides access to a shared informer and lister for

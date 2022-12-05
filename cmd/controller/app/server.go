@@ -19,6 +19,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"os"
+
 	"github.com/google/gops/agent"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,18 +29,16 @@ import (
 	"k8s.io/component-base/term"
 	"k8s.io/klog"
 	"k8s.io/klog/klogr"
-	"kubesphere.io/schedule/pkg/client/k8s"
-	"kubesphere.io/schedule/pkg/constants"
-	"kubesphere.io/schedule/pkg/informers"
-	"os"
+	"kubesphere.io/scheduling/cmd/controller/app/options"
+	"kubesphere.io/scheduling/pkg/apis"
+	"kubesphere.io/scheduling/pkg/client/k8s"
+	controllerconfig "kubesphere.io/scheduling/pkg/config"
+	"kubesphere.io/scheduling/pkg/constants"
+	"kubesphere.io/scheduling/pkg/informers"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/healthz"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
-
-	"kubesphere.io/schedule/cmd/controller/app/options"
-	"kubesphere.io/schedule/pkg/apis"
-	controllerconfig "kubesphere.io/schedule/pkg/config"
 )
 
 func NewControllerManagerCommand() *cobra.Command {

@@ -1,4 +1,4 @@
-# Default values for kubesphere-schedule.
+# Default values for kubesphere-scheduling.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -6,15 +6,15 @@ replicaCount: 1
 
 image:
     controller:
-        repository: wuxs/sechdule-controller
+        repository: kubespheredev/scheduling-controller
         pullPolicy: IfNotPresent # IfNotPresent
         # Overrides the image tag whose default is the chart appVersion.
-        tag: dev--9ae4b20
+        tag: v0.1.3
     apiserver:
-        repository: wuxs/sechdule-apiserver
+        repository: kubespheredev/scheduling-apiserver
         pullPolicy: IfNotPresent # IfNotPresent
         # Overrides the image tag whose default is the chart appVersion.
-        tag: dev--9ae4b20
+        tag: v0.1.3
 
 imagePullSecrets: []
 nameOverride: ""

@@ -22,7 +22,7 @@ import (
 	"github.com/emicklei/go-restful"
 	"k8s.io/apimachinery/pkg/labels"
 
-	"kubesphere.io/schedule/pkg/utils/sliceutil"
+	"kubesphere.io/scheduling/pkg/utils/sliceutil"
 )
 
 const (

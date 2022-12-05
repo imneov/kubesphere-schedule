@@ -20,19 +20,12 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	restfulspec "github.com/emicklei/go-restful-openapi"
-	schedulev1alpha1 "kubesphere.io/schedule/pkg/kapis/schedule/v1alpha1"
-	"kubesphere.io/schedule/pkg/models/schedule"
 	"net/http"
 	rt "runtime"
 	"time"
 
-	"kubesphere.io/schedule/pkg/apiserver/filters"
-	"kubesphere.io/schedule/pkg/apiserver/request"
-	"kubesphere.io/schedule/pkg/client/k8s"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-
 	"github.com/emicklei/go-restful"
+	restfulspec "github.com/emicklei/go-restful-openapi"
 	"k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -42,11 +35,16 @@ import (
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/util/retry"
 	"k8s.io/klog"
+	"kubesphere.io/scheduling/pkg/apiserver/filters"
+	"kubesphere.io/scheduling/pkg/apiserver/request"
+	"kubesphere.io/scheduling/pkg/client/k8s"
+	apiserverconfig "kubesphere.io/scheduling/pkg/config"
+	"kubesphere.io/scheduling/pkg/informers"
+	schedulev1alpha1 "kubesphere.io/scheduling/pkg/kapis/schedule/v1alpha1"
+	"kubesphere.io/scheduling/pkg/models/schedule"
+	utilnet "kubesphere.io/scheduling/pkg/utils/net"
 	runtimecache "sigs.k8s.io/controller-runtime/pkg/cache"
-
-	apiserverconfig "kubesphere.io/schedule/pkg/config"
-	"kubesphere.io/schedule/pkg/informers"
-	utilnet "kubesphere.io/schedule/pkg/utils/net"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 const (
@@ -213,7 +211,7 @@ func (s *APIServer) waitForResourceSync(ctx context.Context) error {
 	stopCh := ctx.Done()
 
 	ScheduleGVRs := map[schema.GroupVersion][]string{
-		{Group: "schedule.kubesphere.io", Version: "v1alpha1"}: {
+		{Group: "scheduling.kubesphere.io", Version: "v1alpha1"}: {
 			"analysistasks",
 		},
 	}

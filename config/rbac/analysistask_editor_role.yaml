@@ -12,7 +12,7 @@ metadata:
   name: analysistask-editor-role
 rules:
 - apiGroups:
-  - schedule.kubesphere.io
+  - scheduling.kubesphere.io
   resources:
   - analysistasks
   verbs:
@@ -24,7 +24,7 @@ rules:
   - update
   - watch
 - apiGroups:
-  - schedule.kubesphere.io
+  - scheduling.kubesphere.io
   resources:
   - analysistasks/status
   verbs:

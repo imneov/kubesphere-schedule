@@ -22,21 +22,16 @@ import (
 	"strings"
 	"time"
 
-	genericoptions "kubesphere.io/schedule/pkg/server/options"
-
-	controllerconfig "kubesphere.io/schedule/pkg/config"
-
-	"k8s.io/apimachinery/pkg/util/sets"
-
-	"k8s.io/apimachinery/pkg/labels"
-
 	"github.com/spf13/pflag"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/client-go/tools/leaderelection"
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/klog"
-
-	"kubesphere.io/schedule/pkg/client/k8s"
-	"kubesphere.io/schedule/pkg/client/schedule"
+	"kubesphere.io/scheduling/pkg/client/k8s"
+	"kubesphere.io/scheduling/pkg/client/schedule"
+	controllerconfig "kubesphere.io/scheduling/pkg/config"
+	genericoptions "kubesphere.io/scheduling/pkg/server/options"
 )
 
 type KubeSphereControllerManagerOptions struct {

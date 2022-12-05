@@ -1,18 +1,18 @@
-{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace "kubesphere-schedule-cert"}}
-{{- $existingWebHookConfig := lookup "admissionregistration.k8s.io/v1" "MutatingWebhookConfiguration" .Release.Namespace "kubesphere-schedule"}}
-{{- $ca := genCA "kubesphere-schedule-ca" 3650 }}
-{{- $cn := printf "kubesphere-schedule" }}
-{{- $altName1 := printf "kubesphere-schedule.%s" .Release.Namespace }}
-{{- $altName2 := printf "kubesphere-schedule.%s.svc" .Release.Namespace }}
-{{- $altName3 := printf "kubesphere-schedule.%s.svc.cluster" .Release.Namespace }}
-{{- $altName4 := printf "kubesphere-schedule.%s.svc.cluster.local" .Release.Namespace }}
+{{- $existingSecret := lookup "v1" "Secret" .Release.Namespace "kubesphere-scheduling-cert"}}
+{{- $existingWebHookConfig := lookup "admissionregistration.k8s.io/v1" "MutatingWebhookConfiguration" .Release.Namespace "kubesphere-scheduling"}}
+{{- $ca := genCA "kubesphere-scheduling-ca" 3650 }}
+{{- $cn := printf "kubesphere-scheduling" }}
+{{- $altName1 := printf "kubesphere-scheduling.%s" .Release.Namespace }}
+{{- $altName2 := printf "kubesphere-scheduling.%s.svc" .Release.Namespace }}
+{{- $altName3 := printf "kubesphere-scheduling.%s.svc.cluster" .Release.Namespace }}
+{{- $altName4 := printf "kubesphere-scheduling.%s.svc.cluster.local" .Release.Namespace }}
 {{- $cert := genSignedCert $cn nil (list $altName1 $altName2 $altName3 $altName4) 3650 $ca }}
 apiVersion: v1
 kind: Secret
 metadata:
-  name: kubesphere-schedule-cert
+  name: kubesphere-scheduling-cert
   labels:
-    {{- include "kubesphere-schedule.labels" . | nindent 4 }}
+    {{- include "kubesphere-scheduling.labels" . | nindent 4 }}
 data:
   {{ if $existingSecret }}tls.crt: {{ index $existingSecret.data "tls.crt" }}
   {{ else }}tls.crt: {{ b64enc $cert.Cert }}
@@ -25,15 +25,15 @@ data:
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: {{ include "kubesphere-schedule.name" . }}
+  name: {{ include "kubesphere-scheduling.name" . }}
   labels:
-    app: {{ include "kubesphere-schedule.name" . }}
+    app: {{ include "kubesphere-scheduling.name" . }}
 webhooks:
-- name: mutating.schedule.kubesphere.io
+- name: mutating.scheduling.kubesphere.io
   clientConfig:
     service:
       namespace: {{ .Release.Namespace }}
-      name: {{ include "kubesphere-schedule.name" . }}
+      name: {{ include "kubesphere-scheduling.name" . }}
       path: "/mutate"
     caBundle: {{ if $existingWebHookConfig }}{{ (index $existingWebHookConfig.webhooks 0).clientConfig.caBundle }}{{ else }}{{ b64enc $ca.Cert }}{{ end }}
   rules:

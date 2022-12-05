@@ -1,4 +1,4 @@
-apiVersion: schedule.kubesphere.io/v1alpha1
+apiVersion: scheduling.kubesphere.io/v1alpha1
 kind: AnalysisTask
 metadata:
   labels:

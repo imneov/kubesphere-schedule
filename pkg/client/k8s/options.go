@@ -17,10 +17,11 @@ limitations under the License.
 package k8s
 
 import (
-	"k8s.io/client-go/util/homedir"
-	"kubesphere.io/schedule/pkg/utils/reflectutils"
 	"os"
 	"path"
+
+	"k8s.io/client-go/util/homedir"
+	"kubesphere.io/scheduling/pkg/utils/reflectutils"
 
 	"github.com/spf13/pflag"
 )

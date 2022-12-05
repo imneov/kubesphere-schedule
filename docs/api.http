@@ -115,7 +115,7 @@ Content-Type: application/json
 
 ### 列出 analysis
 
-GET 127.0.0.1:9090/kapis/schedule.kubesphere.io/v1/analysis
+GET 127.0.0.1:9090/kapis/scheduling.kubesphere.io/v1/analysis
 
 > {%
 client.test("列出 analysis", function() {
@@ -128,28 +128,28 @@ client.test("列出 analysis", function() {
  %}
 
 ###
-DELETE 127.0.0.1:9090/kapis/schedule.kubesphere.io/v1/namespaces/default/analysis/analysis-sample
+DELETE 127.0.0.1:9090/kapis/scheduling.kubesphere.io/v1/namespaces/default/analysis/analysis-sample
 Accept: application/json
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 
 ###
-POST 127.0.0.1:9090/kapis/schedule.kubesphere.io/v1/analysis
+POST 127.0.0.1:9090/kapis/scheduling.kubesphere.io/v1/analysis
 Accept: application/json
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "apiVersion": "schedule.kubesphere.io/v1alpha1",
+  "apiVersion": "scheduling.kubesphere.io/v1alpha1",
   "kind": "AnalysisTask",
   "metadata": {
     "labels": {
       "app.kubernetes.io/name": "analysis",
       "app.kubernetes.io/instance": "analysis-sample",
-      "app.kubernetes.io/part-of": "kubesphere-schedule",
+      "app.kubernetes.io/part-of": "kubesphere-scheduling",
       "app.kuberentes.io/managed-by": "kustomize",
-      "app.kubernetes.io/created-by": "kubesphere-schedule"
+      "app.kubernetes.io/created-by": "kubesphere-scheduling"
     },
     "name": "analysis-sample-2"
   },
@@ -178,21 +178,21 @@ Content-Type: application/json
 
 ###
 
-PATCH 127.0.0.1:9090/kapis/schedule.kubesphere.io/v1//namespaces/default/analysis/analysistask-abcd1234
+PATCH 127.0.0.1:9090/kapis/scheduling.kubesphere.io/v1//namespaces/default/analysis/analysistask-abcd1234
 Accept: application/json
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json
 
 {
-  "apiVersion": "schedule.kubesphere.io/v1alpha1",
+  "apiVersion": "scheduling.kubesphere.io/v1alpha1",
   "kind": "AnalysisTask",
   "metadata": {
     "labels": {
       "app.kubernetes.io/name": "analysis",
       "app.kubernetes.io/instance": "analysis-sample-abcd1234567890",
-      "app.kubernetes.io/part-of": "kubesphere-schedule",
+      "app.kubernetes.io/part-of": "kubesphere-scheduling",
       "app.kuberentes.io/managed-by": "kustomize",
-      "app.kubernetes.io/created-by": "kubesphere-schedule"
+      "app.kubernetes.io/created-by": "kubesphere-scheduling"
     },
     "name": "analysis-sample-2"
   },
@@ -220,7 +220,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH 127.0.0.1:9090/kapis/schedule.kubesphere.io/v1/analysis/config
+PATCH 127.0.0.1:9090/kapis/scheduling.kubesphere.io/v1/analysis/config
 Accept: application/json
 Authorization: Bearer {{auth_token}}
 Content-Type: application/json

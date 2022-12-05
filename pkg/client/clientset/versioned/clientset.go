@@ -24,7 +24,7 @@ import (
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
-	schedulev1alpha1 "kubesphere.io/schedule/pkg/client/clientset/versioned/typed/schedule/v1alpha1"
+	schedulev1alpha1 "kubesphere.io/scheduling/pkg/client/clientset/versioned/typed/schedule/v1alpha1"
 )
 
 type Interface interface {

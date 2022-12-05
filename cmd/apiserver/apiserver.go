@@ -19,7 +19,7 @@ package main
 import (
 	"log"
 
-	"kubesphere.io/schedule/cmd/apiserver/app"
+	"kubesphere.io/scheduling/cmd/apiserver/app"
 )
 
 func main() {

@@ -27,9 +27,9 @@ import (
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
-	versioned "kubesphere.io/schedule/pkg/client/clientset/versioned"
-	internalinterfaces "kubesphere.io/schedule/pkg/client/informers/externalversions/internalinterfaces"
-	schedule "kubesphere.io/schedule/pkg/client/informers/externalversions/schedule"
+	versioned "kubesphere.io/scheduling/pkg/client/clientset/versioned"
+	internalinterfaces "kubesphere.io/scheduling/pkg/client/informers/externalversions/internalinterfaces"
+	schedule "kubesphere.io/scheduling/pkg/client/informers/externalversions/schedule"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.

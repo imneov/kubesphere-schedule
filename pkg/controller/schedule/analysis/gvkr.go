@@ -19,7 +19,7 @@ package analysis
 import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	schedulev1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
+	schedulev1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
 )
 
 const (

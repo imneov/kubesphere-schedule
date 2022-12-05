@@ -24,7 +24,7 @@ import (
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	serializer "k8s.io/apimachinery/pkg/runtime/serializer"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
-	schedulev1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
+	schedulev1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
 )
 
 var scheme = runtime.NewScheme()

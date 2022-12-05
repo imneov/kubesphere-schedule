@@ -33,16 +33,16 @@ echo "++${CODEGEN_PKG}++"
 #                  k8s.io/kubernetes. The output-base is needed for the generators to output into the vendor dir
 #                  instead of the $GOPATH directly. For normal projects this can be dropped.
 bash "${CODEGEN_PKG}"/generate-groups.sh "all" \
-  kubesphere.io/schedule/pkg/client kubesphere.io/schedule/api \
-  schedule:v1alpha1 \
+  kubesphere.io/scheduling/pkg/client kubesphere.io/scheduling/api \
+  scheduling:v1alpha1 \
   --output-base "${SCRIPT_ROOT}/hack/tmp" \
   --go-header-file "${SCRIPT_ROOT}"/hack/boilerplate.go.txt
 
 # To use your own boilerplate text append:
 #   --go-header-file "${SCRIPT_ROOT}"/hack/custom-boilerplate.go.txt
 
-\cp -rf "${SCRIPT_ROOT}"/hack/tmp/kubesphere.io/schedule/api "${SCRIPT_ROOT}"/
-\cp -rf "${SCRIPT_ROOT}"/hack/tmp/kubesphere.io/schedule/pkg/client "${SCRIPT_ROOT}"/pkg
+\cp -rf "${SCRIPT_ROOT}"/hack/tmp/kubesphere.io/scheduling/api "${SCRIPT_ROOT}"/
+\cp -rf "${SCRIPT_ROOT}"/hack/tmp/kubesphere.io/scheduling/pkg/client "${SCRIPT_ROOT}"/pkg
 \rm -rf "${SCRIPT_ROOT}"/hack/tmp
 
 
@@ -54,11 +54,11 @@ bash "${CODEGEN_PKG}"/generate-groups.sh "all" \
 #ECHO "-----------------------------------"
 #
 #bash "${CODEGEN_PKG}"/generate-groups.sh "all" \
-#  kubesphere.io/schedule/pkg/external kubesphere.io/schedule/external/crane \
+#  kubesphere.io/scheduling/pkg/external kubesphere.io/scheduling/external/crane \
 #  analysis:v1alpha1 \
 #  --output-base "${SCRIPT_ROOT}/hack/tmp" \
 #  --go-header-file "${SCRIPT_ROOT}"/hack/boilerplate.go.txt \
 #  -v 8
 #
-#\cp -rf "${SCRIPT_ROOT}"/hack/tmp/kubesphere.io/schedule/pkg/external "${SCRIPT_ROOT}"/pkg
+#\cp -rf "${SCRIPT_ROOT}"/hack/tmp/kubesphere.io/scheduling/pkg/external "${SCRIPT_ROOT}"/pkg
 #\rm -rf "${SCRIPT_ROOT}"/hack/tmp

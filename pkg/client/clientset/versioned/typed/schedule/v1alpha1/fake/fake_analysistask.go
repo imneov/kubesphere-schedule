@@ -27,7 +27,7 @@ import (
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	testing "k8s.io/client-go/testing"
-	v1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
+	v1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
 )
 
 // FakeAnalysisTasks implements AnalysisTaskInterface
@@ -36,9 +36,9 @@ type FakeAnalysisTasks struct {
 	ns   string
 }
 
-var analysistasksResource = schema.GroupVersionResource{Group: "schedule.kubesphere.io", Version: "v1alpha1", Resource: "analysistasks"}
+var analysistasksResource = schema.GroupVersionResource{Group: "scheduling.kubesphere.io", Version: "v1alpha1", Resource: "analysistasks"}
 
-var analysistasksKind = schema.GroupVersionKind{Group: "schedule.kubesphere.io", Version: "v1alpha1", Kind: "AnalysisTask"}
+var analysistasksKind = schema.GroupVersionKind{Group: "scheduling.kubesphere.io", Version: "v1alpha1", Kind: "AnalysisTask"}
 
 // Get takes name of the analysisTask, and returns the corresponding analysisTask object, and an error if there is any.
 func (c *FakeAnalysisTasks) Get(ctx context.Context, name string, options v1.GetOptions) (result *v1alpha1.AnalysisTask, err error) {

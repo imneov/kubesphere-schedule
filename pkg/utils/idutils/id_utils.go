@@ -18,12 +18,13 @@ package idutils
 
 import (
 	"errors"
-	hashids "github.com/speps/go-hashids/v2"
-	"golang.org/x/example/stringutil"
 	"net"
 
+	hashids "github.com/speps/go-hashids/v2"
+	"golang.org/x/example/stringutil"
+
 	"github.com/sony/sonyflake"
-	"kubesphere.io/schedule/pkg/utils/stringutils"
+	"kubesphere.io/scheduling/pkg/utils/stringutils"
 )
 
 var sf *sonyflake.Sonyflake

@@ -31,25 +31,22 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 	urlruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/client-go/dynamic/dynamicinformer"
 	v1 "k8s.io/client-go/informers/apps/v1"
 	corev1informer "k8s.io/client-go/informers/core/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
-	"k8s.io/klog"
-	"kubesphere.io/schedule/api/schedule/v1alpha1"
-	schedulev1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
-	"kubesphere.io/schedule/pkg/client/k8s"
-	"kubesphere.io/schedule/pkg/constants"
-	"kubesphere.io/schedule/pkg/models/schedule"
-	"kubesphere.io/schedule/pkg/utils/jsonpath"
-	"kubesphere.io/schedule/pkg/utils/sliceutil"
+	"kubesphere.io/scheduling/api/schedule/v1alpha1"
+	schedulev1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
+	"kubesphere.io/scheduling/pkg/client/k8s"
+	"kubesphere.io/scheduling/pkg/constants"
+	"kubesphere.io/scheduling/pkg/models/schedule"
+	"kubesphere.io/scheduling/pkg/utils/jsonpath"
+	"kubesphere.io/scheduling/pkg/utils/sliceutil"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
@@ -78,9 +75,9 @@ type AnalysisTaskReconciler struct {
 	AnalysisTaskReverseIndex   map[string]*v1alpha1.AnalysisTask // map[<namespace>]map[<taskName>]*v1alpha1.AnalysisTask
 }
 
-//+kubebuilder:rbac:groups=schedule.kubesphere.io,resources=analysistasks,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=schedule.kubesphere.io,resources=analysistasks/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=schedule.kubesphere.io,resources=analysistasks/finalizers,verbs=update
+//+kubebuilder:rbac:groups=scheduling.kubesphere.io,resources=analysistasks,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=scheduling.kubesphere.io,resources=analysistasks/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=scheduling.kubesphere.io,resources=analysistasks/finalizers,verbs=update
 //+kubebuilder:rbac:groups=installer.kubesphere.io,resources=clusterconfigurations,verbs= get;list;watch;patch;update
 
 //+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
@@ -109,11 +106,10 @@ type AnalysisTaskReconciler struct {
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.13.0/pkg/reconcile
 func (r *AnalysisTaskReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := r.Log.WithValues("AnalysisTask", req.NamespacedName)
-
 	instance := &v1alpha1.AnalysisTask{}
 	if err := r.Get(ctx, req.NamespacedName, instance); err != nil {
 		if apierrors.IsNotFound(err) {
-			log.V(1).Info("AnalysisTask deleted", "error", err)
+			log.Info("AnalysisTask deleted")
 		}
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
@@ -147,13 +143,14 @@ func (r *AnalysisTaskReconciler) Reconcile(ctx context.Context, req ctrl.Request
 }
 
 func (r *AnalysisTaskReconciler) doReconcile(ctx context.Context, instance *schedulev1alpha1.AnalysisTask) (ret ctrl.Result, err error) {
+	log := r.Log.WithName("doReconcile")
 	switch instance.Spec.Type {
 	case v1alpha1.WorkloadResourceType:
 		ret, err = r.doReconcileWorkloadAnalysis(ctx, instance)
 	case v1alpha1.NamespaceResourceType:
 		ret, err = r.doReconcileNamespaceAnalysis(ctx, instance)
 	default:
-		klog.Infof("not support resource type %s, should be Namespace/Workload", instance.Spec.Type)
+		log.Info(fmt.Sprintf("not support resource type %s, should be Namespace/Workload", instance.Spec.Type))
 		return ctrl.Result{}, nil
 	}
 	if err != nil {
@@ -163,19 +160,20 @@ func (r *AnalysisTaskReconciler) doReconcile(ctx context.Context, instance *sche
 }
 
 func (r *AnalysisTaskReconciler) undoReconcile(ctx context.Context, instance *schedulev1alpha1.AnalysisTask) (ctrl.Result, error) {
+	log := r.Log.WithName("undoReconcile")
 	switch instance.Spec.Type {
 	case v1alpha1.NamespaceResourceType:
 		return r.undoReconcileNamespaceAnalysis(ctx, instance)
 	case v1alpha1.WorkloadResourceType:
 		return r.undoReconcileWorkloadAnalysis(ctx, instance)
 	default:
-		klog.Infof("not support resource type %s", instance.Spec.Type)
+		log.Info(fmt.Sprintf("not support resource type %s", instance.Spec.Type))
 		return ctrl.Result{}, nil
 	}
 }
 
 func (r *AnalysisTaskReconciler) doReconcileWorkloadAnalysis(ctx context.Context, instance *schedulev1alpha1.AnalysisTask) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := r.Log.WithName("doReconcileWorkloadAnalysis")
 	hasError := false
 	namespace := instance.Namespace
 	workloads := strings.Split(r.getNamespacesWorkloads(ctx, namespace), ",")
@@ -188,10 +186,9 @@ func (r *AnalysisTaskReconciler) doReconcileWorkloadAnalysis(ctx context.Context
 		}
 		err := r.CreateCraneAnalysis(ctx, workload, instance)
 		if err != nil {
-			err := fmt.Errorf("create crane analysis failed, err: %w", err)
 			r.Recorder.Event(instance, corev1.EventTypeWarning, "CreateAnalysis", err.Error())
 			hasError = true
-			klog.Error(err)
+			log.Error(err, "create crane analysis failed")
 			continue
 		}
 		key := genWorkloadName(workload.Kind, workload.Name)
@@ -207,7 +204,7 @@ func (r *AnalysisTaskReconciler) doReconcileWorkloadAnalysis(ctx context.Context
 
 	workloads = sliceutil.RemoveString(workloads, func(item string) bool { return item == "" })
 	if err := r.updateNamespacesWorkloads(ctx, namespace, strings.Join(workloads, ",")); err != nil {
-		klog.Errorf("get deployment error: %s", err.Error())
+		log.Error(err, "get deployment error")
 		return ctrl.Result{}, err
 	}
 
@@ -219,17 +216,18 @@ func (r *AnalysisTaskReconciler) doReconcileWorkloadAnalysis(ctx context.Context
 		err = r.updateAnalysisTaskStatus(ctx, instance, schedulev1alpha1.RunningStatus)
 	}
 	if err != nil {
-		klog.Errorf("update analysis task status error: %s", err.Error())
+		log.Error(err, "update analysis task status error")
 	}
 
 	return ctrl.Result{}, nil
 }
 
 func (r *AnalysisTaskReconciler) undoReconcileWorkloadAnalysis(ctx context.Context, instance *schedulev1alpha1.AnalysisTask) (ctrl.Result, error) {
+	log := r.Log.WithName("undoReconcileWorkloadAnalysis")
 	//删除 Analysis
 	for _, resource := range instance.Spec.ResourceSelectors {
 		if resource.Kind == schedulev1alpha1.NamespaceResourceType {
-			klog.Errorf("unknown kind %s/%s", resource.Kind, resource.Name)
+			log.Info(fmt.Sprintf("unknown kind %s/%s", resource.Kind, resource.Name))
 			continue
 		}
 
@@ -239,7 +237,7 @@ func (r *AnalysisTaskReconciler) undoReconcileWorkloadAnalysis(ctx context.Conte
 			APIVersion: resource.APIVersion,
 			Namespace:  instance.Namespace,
 		}, instance); err != nil {
-			klog.Errorf("delete analysis error: %s", err.Error())
+			log.Error(err, "delete analysis error")
 			return ctrl.Result{}, err
 		}
 	}
@@ -247,20 +245,20 @@ func (r *AnalysisTaskReconciler) undoReconcileWorkloadAnalysis(ctx context.Conte
 }
 
 func (r *AnalysisTaskReconciler) doReconcileNamespaceAnalysis(ctx context.Context, instance *schedulev1alpha1.AnalysisTask) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := r.Log.WithName("doReconcileNamespaceAnalysis")
 	if instance.Spec.Type != schedulev1alpha1.NamespaceResourceType {
 		err := fmt.Errorf("not support resource type %s", instance.Spec.Type)
 		return ctrl.Result{}, err
 	}
 	for _, resource := range instance.Spec.ResourceSelectors {
 		if resource.Kind != schedulev1alpha1.NamespaceResourceType {
-			klog.Errorf("unknown kind %v", resource)
+			log.Info(fmt.Sprintf("unknown kind %v", resource))
 			continue
 		}
 
 		namespace := resource.Name
 		if namespace == "" {
-			klog.Errorf("namespace is empty, %v", instance)
+			log.Info(fmt.Sprintf("namespace is empty, %v", instance))
 			continue
 		}
 		r.NameSpaceAnalysisTaskCache[namespace] = instance
@@ -275,7 +273,7 @@ func (r *AnalysisTaskReconciler) doReconcileNamespaceAnalysis(ctx context.Contex
 		// overwrite Namespaces Annotations
 		err = r.updateNamespacesWorkloads(ctx, namespace, "")
 		if err != nil {
-			klog.Errorf("get deployment error: %s", err.Error())
+			log.Error(err, "get deployment error")
 			return ctrl.Result{}, err
 		}
 	}
@@ -288,15 +286,16 @@ func (r *AnalysisTaskReconciler) doReconcileNamespaceAnalysis(ctx context.Contex
 		err = r.updateAnalysisTaskStatus(ctx, instance, schedulev1alpha1.RunningStatus)
 	}
 	if err != nil {
-		klog.Errorf("update analysis task status error: %s", err.Error())
+		log.Error(err, "update analysis task status error")
 	}
 	return ctrl.Result{}, nil
 }
 
 func (r *AnalysisTaskReconciler) reconcileNamespaceAnalysis(ctx context.Context, namespace string, instance *schedulev1alpha1.AnalysisTask) (ctrl.Result, error) {
+	log := r.Log.WithName("reconcileNamespaceAnalysis")
 	deployments, err := r.K8SClient.Kubernetes().AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
-		klog.Errorf("get deployment error: %s", err.Error())
+		log.Error(err, "get deployment error: %s", err.Error())
 		return ctrl.Result{}, err
 	}
 	for _, resource := range deployments.Items {
@@ -304,14 +303,14 @@ func (r *AnalysisTaskReconciler) reconcileNamespaceAnalysis(ctx context.Context,
 		workload.Namespace = namespace
 		err := r.CreateCraneAnalysis(ctx, workload, instance)
 		if err != nil {
-			klog.Errorf("create crane analysis failed, err: %v", err)
+			log.Error(err, "create crane analysis failed")
 			return ctrl.Result{}, err
 		}
 	}
 
 	statefulSets, err := r.K8SClient.Kubernetes().AppsV1().StatefulSets(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
-		klog.Errorf("get deployment error: %s", err.Error())
+		log.Error(err, "get deployment error: %s", err.Error())
 		return ctrl.Result{}, err
 	}
 	for _, resource := range statefulSets.Items {
@@ -319,14 +318,14 @@ func (r *AnalysisTaskReconciler) reconcileNamespaceAnalysis(ctx context.Context,
 		workload.Namespace = namespace
 		err := r.CreateCraneAnalysis(ctx, workload, instance)
 		if err != nil {
-			klog.Errorf("create crane analysis failed, err: %v", err)
+			log.Error(err, "create crane analysis failed")
 			return ctrl.Result{}, err
 		}
 	}
 
 	daemonSets, err := r.K8SClient.Kubernetes().AppsV1().DaemonSets(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
-		klog.Errorf("get deployment error: %s", err.Error())
+		log.Error(err, "get deployment error: %s", err.Error())
 		return ctrl.Result{}, err
 	}
 	for _, resource := range daemonSets.Items {
@@ -334,12 +333,12 @@ func (r *AnalysisTaskReconciler) reconcileNamespaceAnalysis(ctx context.Context,
 		workload.Namespace = namespace
 		err := r.CreateCraneAnalysis(ctx, workload, instance)
 		if err != nil {
-			klog.Errorf("create crane analysis failed, err: %v", err)
+			log.Error(err, "create crane analysis failed")
 			return ctrl.Result{}, err
 		}
 	}
 
-	r.updateNamespaceTaskLabel(ctx, namespace, instance)
+	_ = r.updateNamespaceTaskLabel(ctx, namespace, instance)
 	return ctrl.Result{}, nil
 }
 
@@ -349,7 +348,7 @@ func (r *AnalysisTaskReconciler) undoReconcileNamespaceAnalysis(ctx context.Cont
 	for _, resource := range instance.Spec.ResourceSelectors {
 		if resource.Kind != schedulev1alpha1.NamespaceResourceType ||
 			resource.Name == "" {
-			klog.Errorf("unknown kind %v", resource)
+			log.Info(fmt.Sprintf("unknown kind %v", resource))
 			continue
 		}
 		namespace := resource.Name
@@ -363,15 +362,14 @@ func (r *AnalysisTaskReconciler) undoReconcileNamespaceAnalysis(ctx context.Cont
 			log.Error(err, "Failed to Get Deployments")
 			return ctrl.Result{}, err
 		}
-		for _, resource := range deployments.Items {
+		for _, item := range deployments.Items {
 			if err := r.DeleteCraneAnalysis(ctx, corev1.ObjectReference{
-				Kind:       resource.Kind,
-				Name:       resource.Name,
-				APIVersion: resource.APIVersion,
+				Kind:       item.Kind,
+				Name:       item.Name,
+				APIVersion: item.APIVersion,
 				Namespace:  namespace,
 			}, instance); err != nil {
-				klog.Errorf("delete analysis error: %s", err.Error())
-				return ctrl.Result{}, err
+				log.Error(err, "delete analysis error")
 			}
 		}
 
@@ -380,14 +378,14 @@ func (r *AnalysisTaskReconciler) undoReconcileNamespaceAnalysis(ctx context.Cont
 			log.Error(err, "Failed to Get Deployments")
 			return ctrl.Result{}, err
 		}
-		for _, resource := range statefulSets.Items {
+		for _, item := range statefulSets.Items {
 			if err := r.DeleteCraneAnalysis(ctx, corev1.ObjectReference{
-				Kind:       resource.Kind,
-				Name:       resource.Name,
-				APIVersion: resource.APIVersion,
+				Kind:       item.Kind,
+				Name:       item.Name,
+				APIVersion: item.APIVersion,
 				Namespace:  namespace,
 			}, instance); err != nil {
-				klog.Errorf("delete analysis error: %s", err.Error())
+				log.Error(err, "delete analysis error")
 				return ctrl.Result{}, err
 			}
 		}
@@ -397,24 +395,25 @@ func (r *AnalysisTaskReconciler) undoReconcileNamespaceAnalysis(ctx context.Cont
 			log.Error(err, "Failed to Get Deployments")
 			return ctrl.Result{}, err
 		}
-		for _, resource := range daemonSets.Items {
+		for _, item := range daemonSets.Items {
 			if err := r.DeleteCraneAnalysis(ctx, corev1.ObjectReference{
-				Kind:       resource.Kind,
-				Name:       resource.Name,
-				APIVersion: resource.APIVersion,
+				Kind:       item.Kind,
+				Name:       item.Name,
+				APIVersion: item.APIVersion,
 				Namespace:  namespace,
 			}, instance); err != nil {
-				klog.Errorf("delete analysis error: %s", err.Error())
+				log.Error(err, "delete analysis error")
 				return ctrl.Result{}, err
 			}
 		}
 
-		r.cleanNamespaceTaskLabel(ctx, namespace)
+		_ = r.cleanNamespaceTaskLabel(ctx, namespace)
 	}
 	return ctrl.Result{}, nil
 }
 
 func (r *AnalysisTaskReconciler) handleWorkloadUpdateEvent(workload interface{}) {
+	log := r.Log.WithName("handleWorkloadUpdateEvent")
 	objectRef, oldTaskKey := getObjectReference(workload)
 	namespace := objectRef.Namespace
 	if analysisTask, ok := r.NameSpaceAnalysisTaskCache[namespace]; ok {
@@ -424,19 +423,21 @@ func (r *AnalysisTaskReconciler) handleWorkloadUpdateEvent(workload interface{})
 		}
 		err := r.CreateCraneAnalysis(context.Background(), objectRef, analysisTask)
 		if err != nil {
-			klog.Errorf("create crane analysis failed, err: %v", err)
+			log.Error(err, "create crane analysis failed")
 			return
 		}
 	} else {
-		klog.V(4).Infof("skip create deployment analysis %s", objectRef.Name)
+		log.Info(fmt.Sprintf("skip create workload analysis %s", objectRef.Name))
 	}
 }
 
 func (r *AnalysisTaskReconciler) handleDeploymentRemoveEvent(deployment *appsv1.Deployment) {
-	klog.Infof("handle deployment remove event %s, do nothing", deployment.Name)
+	log := r.Log.WithName("handleDeploymentRemoveEvent")
+	log.Info(fmt.Sprintf("handle deployment remove event %s, do nothing", deployment.Name))
 }
 
 func (r *AnalysisTaskReconciler) WorkloadEventHandler() cache.ResourceEventHandler {
+	log := r.Log.WithName("WorkloadEventHandler")
 	return cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			r.handleWorkloadUpdateEvent(obj)
@@ -446,16 +447,17 @@ func (r *AnalysisTaskReconciler) WorkloadEventHandler() cache.ResourceEventHandl
 		},
 		DeleteFunc: func(obj interface{}) {
 			deployment := obj.(*appsv1.Deployment)
-			klog.V(4).Infof("delete deployment delete event %s", deployment.Name)
+			log.Info(fmt.Sprintf("delete deployment delete event %s", deployment.Name))
 		},
 	}
 }
 
 func (r *AnalysisTaskReconciler) UpdateIndexCache(instance *schedulev1alpha1.AnalysisTask) {
+	log := r.Log.WithName("UpdateIndexCache")
 	//r.IndexCache[key] = instance
 	key := genAnalysisTaskIndexKey(instance.Namespace, instance.Name)
 	if o, ok := r.AnalysisTaskReverseIndex[key]; ok {
-		klog.V(4).Infof("analysis task %s %s will overwrite", key, o.CreationTimestamp)
+		log.Info(fmt.Sprintf("analysis task %s %s will overwrite", key, o.CreationTimestamp))
 	}
 	r.AnalysisTaskReverseIndex[key] = instance
 }
@@ -473,39 +475,41 @@ func (r *AnalysisTaskReconciler) GetAnalysisTask(namespace string, taskID string
 }
 
 func (r *AnalysisTaskReconciler) ConfigEventHandler() cache.ResourceEventHandler {
+	log := r.Log.WithName("ConfigEventHandler")
 	return cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			r.UpdateScheduleConfig(obj)
-			klog.V(4).Infof("receiver Installer add event %v", r.ClusterScheduleConfig)
+			log.Info(fmt.Sprintf("receiver Installer add event %v", r.ClusterScheduleConfig))
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			r.UpdateScheduleConfig(newObj)
-			klog.V(4).Infof("receiver Installer update event %v", r.ClusterScheduleConfig)
+			log.Info(fmt.Sprintf("receiver Installer update event %v", r.ClusterScheduleConfig))
 		},
 		DeleteFunc: func(obj interface{}) {
 			//r.UpdateScheduleConfig(obj)
-			klog.V(4).Infof("delete Installer delete event %v", obj, r.ClusterScheduleConfig)
+			log.Info(fmt.Sprintf("delete Installer delete event %v", obj, r.ClusterScheduleConfig))
 		},
 	}
 }
 
 func (r *AnalysisTaskReconciler) AnalyticsEventHandler() cache.ResourceEventHandler {
+	log := r.Log.WithName("AnalyticsEventHandler")
 	return cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
 			o := obj.(*cranev1alpha1.Analytics)
-			klog.V(4).Infof("reciver Analytics add event %v", o)
+			log.Info(fmt.Sprintf("reciver Analytics add event %v", o))
 		},
 		UpdateFunc: func(oldObj, newObj interface{}) {
 			//o := newObj.(*cranev1alpha1.Analytics)
 			//o.Labels @TODO
-			//klog.Infof("reciver Analytics update event %v:%v", o.ResourceVersion, o.Status.LastUpdateTime)
+			//log.Info("reciver Analytics update event %v:%v", o.ResourceVersion, o.Status.LastUpdateTime)
 			//for _, comm := range o.Status.Recommendations {
-			//	klog.V(4).Infof("reciver Analytics update event %s: %s", comm.Name, comm.Message)
+			//	log.Info("reciver Analytics update event %s: %s", comm.Name, comm.Message)
 			//}
 		},
 		DeleteFunc: func(obj interface{}) {
 			o := obj.(*cranev1alpha1.Analytics)
-			klog.V(4).Infof("reciver Analytics delete event %v", o)
+			log.Info(fmt.Sprintf("reciver Analytics delete event %v", o))
 		},
 	}
 }
@@ -522,15 +526,16 @@ func (r *AnalysisTaskReconciler) RecommendationsEventHandler() cache.ResourceEve
 }
 
 func (r *AnalysisTaskReconciler) UpdateScheduleConfig(newObj interface{}) {
+	log := r.Log.WithName("UpdateScheduleConfig")
 	var config *schedulev1alpha1.ClusterScheduleConfig
 	object := jsonpath.New(newObj)
 	err := object.DataAs("spec.scheduler", &config)
 	if err != nil {
-		klog.Errorf("parse ClusterConfig is error", object)
+		log.Error(err, "parse ClusterConfig is error", object)
 		return
 	}
 	r.ClusterScheduleConfig = config
-	klog.V(4).Infof("update cluster schedule config: %v", config)
+	log.Info(fmt.Sprintf("update cluster schedule config: %v", config))
 }
 
 // SetupWithManager sets up the controller with the Manager.
@@ -554,9 +559,9 @@ func (r *AnalysisTaskReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	r.StatefulSetsInformer.Informer().AddEventHandler(r.WorkloadEventHandler())
 	r.AnalyticsInformer.Informer().AddEventHandler(r.AnalyticsEventHandler())
 	r.RecommendationInformer.Informer().AddEventHandler(r.RecommendationsEventHandler())
-	r.DynamicInformer.ForResource(schema.GroupVersionResource{
-		Group: "installer.kubesphere.io", Version: "v1alpha1", Resource: "clusterconfigurations",
-	}).Informer().AddEventHandler(r.ConfigEventHandler())
+	//r.DynamicInformer.ForResource(schema.GroupVersionResource{
+	//	Group: "installer.kubesphere.io", Version: "v1alpha1", Resource: "clusterconfigurations",
+	//}).Informer().AddEventHandler(r.ConfigEventHandler())
 
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&schedulev1alpha1.AnalysisTask{}).
@@ -564,7 +569,7 @@ func (r *AnalysisTaskReconciler) SetupWithManager(mgr ctrl.Manager) error {
 }
 
 func (r *AnalysisTaskReconciler) Validating(ctx context.Context, request admission.Request) admission.Response {
-	return admission.Allowed("@TODO Validating")
+	return admission.Allowed("Validating")
 }
 
 func genAnalysis(resource corev1.ObjectReference, instance *schedulev1alpha1.AnalysisTask) *cranev1alpha1.Analytics {
@@ -574,7 +579,7 @@ func genAnalysis(resource corev1.ObjectReference, instance *schedulev1alpha1.Ana
 	return analytics
 }
 
-func (r *AnalysisTaskReconciler) CreateCraneAnalysis(ctx context.Context, resource corev1.ObjectReference, instance *v1alpha1.AnalysisTask) (err error) {
+func (r *AnalysisTaskReconciler) CreateCraneAnalysis(ctx context.Context, resource corev1.ObjectReference, instance *v1alpha1.AnalysisTask) error {
 	log := r.Log.WithName("CreateCraneAnalysis")
 
 	if err := r.updateWorkloadTaskLabel(ctx, resource, instance); err != nil {
@@ -584,22 +589,25 @@ func (r *AnalysisTaskReconciler) CreateCraneAnalysis(ctx context.Context, resour
 
 	analytics := genAnalysis(resource, instance)
 	if err := r.ScheduleClient.CreateCraneAnalysis(ctx, resource.Namespace, analytics); err != nil {
-		log.Error(err, "creat analysis error %s")
+		log.Error(err, "creat analysis error")
 		return err
 	}
 
 	r.Recorder.Event(instance, corev1.EventTypeNormal, "CreateCraneAnalysis", fmt.Sprintf("Create CraneAnalysis %s/%s", resource.Namespace, resource.Name))
-	return
+	return nil
 }
 
 func (r *AnalysisTaskReconciler) DeleteCraneAnalysis(ctx context.Context, resource corev1.ObjectReference, instance *v1alpha1.AnalysisTask) (err error) {
+	log := r.Log.WithName("DeleteCraneAnalysis")
 	if err = r.cleanWorkloadTaskLabel(ctx, resource, instance); err != nil {
+		log.Error(err, "clean workload label error")
 		return err
 	}
 
 	name := genAnalysisName(instance.Spec.Type, resource.Kind, resource.Name)
 	err = r.ScheduleClient.DeleteCraneAnalysis(ctx, resource.Namespace, name)
 	if err != nil {
+		log.Error(err, "delete analysis error")
 		return err
 	}
 	r.Recorder.Event(instance, corev1.EventTypeNormal, "DeleteCraneAnalysis", fmt.Sprintf("Delete CraneAnalysis %s/%s", resource.Namespace, name))
@@ -607,31 +615,33 @@ func (r *AnalysisTaskReconciler) DeleteCraneAnalysis(ctx context.Context, resour
 }
 
 func (r *AnalysisTaskReconciler) updateWorkloadTaskLabel(ctx context.Context, resource corev1.ObjectReference, instance *v1alpha1.AnalysisTask) error {
-	log := r.Log.WithName("updateAnalysisTaskLabel")
+	log := r.Log.WithName("updateWorkloadTaskLabel")
 
 	gvkr, err := ParseGVKR(r.RestMapper, resource.APIVersion, resource.Kind)
 	if err != nil {
 		log.Error(err, "Failed to parse Group, Version, Kind, Resource", "apiVersion", resource.APIVersion, "kind", resource.Kind)
 	}
 	gvkString := gvkr.GVKString()
-	log.V(1).Info("Parsed Group, Version, Kind, Resource", "GVK", gvkString, "Resource", gvkr.Resource)
+	log.Info("Parsed Group, Version, Kind, Resource", "Name", resource.Name, "GVK", gvkString, "Resource", gvkr.Resource)
 
 	unstruct := &unstructured.Unstructured{}
 	unstruct.SetGroupVersionKind(gvkr.GroupVersionKind())
 	if err := r.Client.Get(ctx, client.ObjectKey{Namespace: resource.Namespace, Name: resource.Name}, unstruct); err != nil {
 		// resource doesn't exist
-		log.V(1).Error(err, "Target resource doesn't exist", "resource", gvkString, "name", resource.Name)
+		log.Error(err, "Target resource doesn't exist", "resource", gvkString, "name", resource.Name)
 		return client.IgnoreNotFound(err)
 	}
 
+	usCopy := unstruct.DeepCopy()
 	labels := unstruct.GetLabels()
 	if labels == nil {
 		labels = make(map[string]string)
 	}
 	labels[constants.AnalysisTaskLabelKey] = instance.Name
-	unstruct.SetLabels(labels)
-	if err := r.Client.Update(ctx, unstruct); err != nil {
-		log.Error(err, "Failed to update target workload", "apiVersion", resource.APIVersion, "kind", resource.Kind)
+	usCopy.SetLabels(labels)
+	patch := client.MergeFrom(unstruct)
+	if err = r.Client.Patch(ctx, usCopy, patch); err != nil {
+		log.Error(err, "Failed to patch target workload", "apiVersion", resource.APIVersion, "kind", resource.Kind)
 		return err
 	}
 
@@ -639,20 +649,20 @@ func (r *AnalysisTaskReconciler) updateWorkloadTaskLabel(ctx context.Context, re
 }
 
 func (r *AnalysisTaskReconciler) cleanWorkloadTaskLabel(ctx context.Context, resource corev1.ObjectReference, instance *v1alpha1.AnalysisTask) error {
-	log := r.Log.WithName("updateAnalysisTaskLabel")
+	log := r.Log.WithName("cleanWorkloadTaskLabel")
 
 	gvkr, err := ParseGVKR(r.RestMapper, resource.APIVersion, resource.Kind)
 	if err != nil {
 		log.Error(err, "Failed to parse Group, Version, Kind, Resource", "apiVersion", resource.APIVersion, "kind", resource.Kind)
 	}
 	gvkString := gvkr.GVKString()
-	log.V(1).Info("Parsed Group, Version, Kind, Resource", "GVK", gvkString, "Resource", gvkr.Resource)
+	log.Info("Parsed Group, Version, Kind, Resource", "Name", resource.Name, "GVK", gvkString, "Resource", gvkr.Resource)
 
 	unstruct := &unstructured.Unstructured{}
 	unstruct.SetGroupVersionKind(gvkr.GroupVersionKind())
 	if err := r.Client.Get(ctx, client.ObjectKey{Namespace: resource.Namespace, Name: resource.Name}, unstruct); err != nil {
 		// resource doesn't exist
-		log.V(1).Error(err, "Target resource doesn't exist", "resource", gvkString, "name", resource.Name)
+		log.Error(err, "Target resource doesn't exist", "resource", gvkString, "name", resource.Name)
 		return client.IgnoreNotFound(err)
 	}
 
@@ -672,6 +682,7 @@ func (r *AnalysisTaskReconciler) cleanWorkloadTaskLabel(ctx context.Context, res
 }
 
 func (r *AnalysisTaskReconciler) updateNamespaceTaskLabel(ctx context.Context, namespace string, instance *v1alpha1.AnalysisTask) error {
+	log := r.Log.WithName("updateNamespaceTaskLabel")
 	ns, err := r.K8SClient.Kubernetes().CoreV1().Namespaces().Get(ctx, namespace, metav1.GetOptions{})
 	if err != nil {
 		return err
@@ -685,7 +696,7 @@ func (r *AnalysisTaskReconciler) updateNamespaceTaskLabel(ctx context.Context, n
 	patch := client.MergeFrom(ns)
 	data, err := patch.Data(nsCopy)
 	if err != nil {
-		klog.Error("create patch failed", err)
+		log.Error(err, "create patch failed")
 		return err
 	}
 
@@ -696,13 +707,14 @@ func (r *AnalysisTaskReconciler) updateNamespaceTaskLabel(ctx context.Context, n
 
 	_, err = r.K8SClient.Kubernetes().CoreV1().Namespaces().Patch(ctx, ns.Name, patch.Type(), data, metav1.PatchOptions{})
 	if err != nil {
-		klog.Error(err)
+		log.Error(err, "patch namespace failed")
 		return err
 	}
 	return nil
 }
 
 func (r *AnalysisTaskReconciler) cleanNamespaceTaskLabel(ctx context.Context, namespace string) error {
+	log := r.Log.WithName("cleanNamespaceTaskLabel")
 	ns, err := r.K8SClient.Kubernetes().CoreV1().Namespaces().Get(ctx, namespace, metav1.GetOptions{})
 	if err != nil {
 		return err
@@ -716,7 +728,7 @@ func (r *AnalysisTaskReconciler) cleanNamespaceTaskLabel(ctx context.Context, na
 	patch := client.MergeFrom(ns)
 	data, err := patch.Data(nsCopy)
 	if err != nil {
-		klog.Error("create patch failed", err)
+		log.Error(err, "create patch failed")
 		return err
 	}
 
@@ -727,20 +739,21 @@ func (r *AnalysisTaskReconciler) cleanNamespaceTaskLabel(ctx context.Context, na
 
 	_, err = r.K8SClient.Kubernetes().CoreV1().Namespaces().Patch(ctx, ns.Name, patch.Type(), data, metav1.PatchOptions{})
 	if err != nil {
-		klog.Error(err)
+		log.Error(err, "patch namespace failed")
 		return err
 	}
 	return nil
 }
 
 func (r *AnalysisTaskReconciler) updateNamespacesWorkloads(ctx context.Context, namespace string, value string) error {
+	log := r.Log.WithName("updateNamespacesWorkloads")
 	ns, err := r.K8SClient.Kubernetes().CoreV1().Namespaces().Get(ctx, namespace, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
 
 	oldValue := Label(ns.Annotations, constants.AnalysisTaskWorkloadAnnotationKey)
-	klog.V(4).Infof("overwrite namespace %s annotation %s,old =%s,new = %s", namespace, constants.AnalysisTaskWorkloadAnnotationKey, oldValue, value)
+	log.Info(fmt.Sprintf("overwrite namespace %s annotation %s,old =%s,new = %s", namespace, constants.AnalysisTaskWorkloadAnnotationKey, oldValue, value))
 	nsCopy := ns.DeepCopy()
 	if nsCopy.Annotations == nil {
 		nsCopy.Annotations = make(map[string]string, 0)
@@ -753,7 +766,7 @@ func (r *AnalysisTaskReconciler) updateNamespacesWorkloads(ctx context.Context, 
 	patch := client.MergeFrom(ns)
 	data, err := patch.Data(nsCopy)
 	if err != nil {
-		klog.Error("create patch failed", err)
+		log.Error(err, "create patch failed")
 		return err
 	}
 
@@ -764,7 +777,7 @@ func (r *AnalysisTaskReconciler) updateNamespacesWorkloads(ctx context.Context, 
 
 	_, err = r.K8SClient.Kubernetes().CoreV1().Namespaces().Patch(ctx, namespace, patch.Type(), data, metav1.PatchOptions{})
 	if err != nil {
-		klog.Error(err)
+		log.Error(err, "patch namespace failed")
 		return err
 	}
 	return nil

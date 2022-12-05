@@ -25,8 +25,8 @@ import (
 	cliflag "k8s.io/component-base/cli/flag"
 	"k8s.io/klog/v2"
 
-	"kubesphere.io/schedule/cmd/apiserver/app/options"
-	"kubesphere.io/schedule/pkg/config"
+	"kubesphere.io/scheduling/cmd/apiserver/app/options"
+	"kubesphere.io/scheduling/pkg/config"
 	"sigs.k8s.io/controller-runtime/pkg/manager/signals"
 )
 

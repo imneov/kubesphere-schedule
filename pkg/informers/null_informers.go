@@ -17,16 +17,17 @@ limitations under the License.
 package informers
 
 import (
+	"time"
+
 	extinformers "github.com/gocrane/api/pkg/generated/informers/externalversions"
 	"k8s.io/client-go/dynamic/dynamicinformer"
-	"time"
 
 	apiextensionsinformers "k8s.io/apiextensions-apiserver/pkg/client/informers/externalversions"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes/fake"
 
-	ksfake "kubesphere.io/schedule/pkg/client/clientset/versioned/fake"
-	scheduleinformers "kubesphere.io/schedule/pkg/client/informers/externalversions"
+	ksfake "kubesphere.io/scheduling/pkg/client/clientset/versioned/fake"
+	scheduleinformers "kubesphere.io/scheduling/pkg/client/informers/externalversions"
 )
 
 type nullInformerFactory struct {

@@ -18,14 +18,15 @@ package analysis
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
+
 	cranev1alpha1 "github.com/gocrane/api/analysis/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"kubesphere.io/schedule/pkg/constants"
-	"reflect"
+	"kubesphere.io/scheduling/pkg/constants"
 	"sigs.k8s.io/controller-runtime/pkg/client/apiutil"
-	"strings"
 )
 
 func NotNil(obj interface{}, msgs ...string) error {

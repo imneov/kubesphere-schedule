@@ -19,7 +19,7 @@ package main
 import (
 	"os"
 
-	"kubesphere.io/schedule/cmd/controller/app"
+	"kubesphere.io/scheduling/cmd/controller/app"
 )
 
 func main() {

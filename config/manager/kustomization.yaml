@@ -4,5 +4,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
 - name: controller
-  newName: harbor.tkeel.io:30003/kubesphere/sechdule-controller
+  newName: harbor.tkeel.io:30003/kubesphere/sechduling-controller
   newTag: dev-v0.0.4-a9de16f

@@ -34,8 +34,8 @@ import (
 	k8srequest "k8s.io/apiserver/pkg/endpoints/request"
 	"k8s.io/klog"
 
-	"kubesphere.io/schedule/pkg/constants"
-	netutils "kubesphere.io/schedule/pkg/utils/net"
+	"kubesphere.io/scheduling/pkg/constants"
+	netutils "kubesphere.io/scheduling/pkg/utils/net"
 )
 
 type RequestInfoResolver interface {

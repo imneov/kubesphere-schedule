@@ -18,6 +18,7 @@ package k8s
 
 import (
 	"errors"
+
 	cranev1 "github.com/gocrane/api/pkg/generated/clientset/versioned"
 	ext "github.com/gocrane/api/pkg/generated/clientset/versioned"
 	apiextensionsclient "k8s.io/apiextensions-apiserver/pkg/client/clientset/clientset"
@@ -26,7 +27,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	schedule "kubesphere.io/schedule/pkg/client/clientset/versioned"
+	schedule "kubesphere.io/scheduling/pkg/client/clientset/versioned"
 )
 
 type Client interface {

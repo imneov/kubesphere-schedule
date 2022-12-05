@@ -268,11 +268,11 @@
 ### 启动时报错
 
 ```
-I1029 10:30:59.032622   98782 controller.go:165] controller/analysis "msg"="Starting EventSource" "reconciler group"="schedule.kubesphere.io" "reconciler kind"="Analysis" "source"={"Type":{"metadata":{"creationTimestamp":null},"spec":{"resourceSelectors":null,"completionStrategy":{}},"status":{}}}
-I1029 10:30:59.032668   98782 controller.go:173] controller/analysis "msg"="Starting Controller" "reconciler group"="schedule.kubesphere.io" "reconciler kind"="Analysis" 
-E1029 10:30:59.241859   98782 deleg.go:144] controller-runtime/source "msg"="if kind is a CRD, it should be installed before calling Start" "error"="no matches for kind \"Analysis\" in version \"schedule.kubesphere.io/v1alpha1\""  "kind"={"Group":"schedule.kubesphere.io","Kind":"Analysis"}
-E1029 10:30:59.241932   98782 controller.go:190] controller/analysis "msg"="Could not wait for Cache to sync" "error"="failed to wait for analysis caches to sync: no matches for kind \"Analysis\" in version \"schedule.kubesphere.io/v1alpha1\"" "reconciler group"="schedule.kubesphere.io" "reconciler kind"="Analysis" 
-F1029 10:30:59.242041   98782 server.go:198] unable to run the manager: failed to wait for analysis caches to sync: no matches for kind "Analysis" in version "schedule.kubesphere.io/v1alpha1"
+I1029 10:30:59.032622   98782 controller.go:165] controller/analysis "msg"="Starting EventSource" "reconciler group"="scheduling.kubesphere.io" "reconciler kind"="Analysis" "source"={"Type":{"metadata":{"creationTimestamp":null},"spec":{"resourceSelectors":null,"completionStrategy":{}},"status":{}}}
+I1029 10:30:59.032668   98782 controller.go:173] controller/analysis "msg"="Starting Controller" "reconciler group"="scheduling.kubesphere.io" "reconciler kind"="Analysis" 
+E1029 10:30:59.241859   98782 deleg.go:144] controller-runtime/source "msg"="if kind is a CRD, it should be installed before calling Start" "error"="no matches for kind \"Analysis\" in version \"scheduling.kubesphere.io/v1alpha1\""  "kind"={"Group":"scheduling.kubesphere.io","Kind":"Analysis"}
+E1029 10:30:59.241932   98782 controller.go:190] controller/analysis "msg"="Could not wait for Cache to sync" "error"="failed to wait for analysis caches to sync: no matches for kind \"Analysis\" in version \"scheduling.kubesphere.io/v1alpha1\"" "reconciler group"="scheduling.kubesphere.io" "reconciler kind"="Analysis" 
+F1029 10:30:59.242041   98782 server.go:198] unable to run the manager: failed to wait for analysis caches to sync: no matches for kind "Analysis" in version "scheduling.kubesphere.io/v1alpha1"
 Exiting.
 ```
 
@@ -299,12 +299,12 @@ global:
 
 ### 找不到新增的 CR
 ```
-E1030 12:24:15.916419   79293 controller.go:304] controller/analysis "msg"="Reconciler error" "error"="no kind is registered for the type v1alpha1.NamespaceAnalysis in scheme \"k8s.io/client-go/kubernetes/scheme/register.go:72\"" "name"="analysis-sample" "namespace"="default" "reconciler group"="schedule.kubesphere.io" "reconciler kind"="Analysis" 
+E1030 12:24:15.916419   79293 controller.go:304] controller/analysis "msg"="Reconciler error" "error"="no kind is registered for the type v1alpha1.NamespaceAnalysis in scheme \"k8s.io/client-go/kubernetes/scheme/register.go:72\"" "name"="analysis-sample" "namespace"="default" "reconciler group"="scheduling.kubesphere.io" "reconciler kind"="Analysis" 
 I1030 12:24:18.477386   79293 namespace_analysis_controller.go:69] [+]---4---
-E1030 12:24:18.477581   79293 controller.go:304] controller/analysis "msg"="Reconciler error" "error"="no kind is registered for the type v1alpha1.NamespaceAnalysis in scheme \"k8s.io/client-go/kubernetes/scheme/register.go:72\"" "name"="analysis-sample" "namespace"="default" "reconciler group"="schedule.kubesphere.io" "reconciler kind"="Analysis" 
+E1030 12:24:18.477581   79293 controller.go:304] controller/analysis "msg"="Reconciler error" "error"="no kind is registered for the type v1alpha1.NamespaceAnalysis in scheme \"k8s.io/client-go/kubernetes/scheme/register.go:72\"" "name"="analysis-sample" "namespace"="default" "reconciler group"="scheduling.kubesphere.io" "reconciler kind"="Analysis" 
 ```
 
-Add `api/schedule/v1alpha1/types.go:126`
+Add `api/scheduling/v1alpha1/types.go:126`
 ```go
 func init() {
 	...

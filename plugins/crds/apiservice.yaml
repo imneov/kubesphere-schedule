@@ -5,7 +5,7 @@ metadata:
 spec:
  group: schedule.io
  version: v1alpha1
- url: https://apiserver.kubesphere-schedule-system.svc:8000
+ url: https://apiserver.kubesphere-scheduling-system.svc:8000
 
 ---
 
@@ -16,4 +16,4 @@ metadata:
 spec:
  group: schedule.io
  version: v1
- url: https://apiservice.kubesphere-schedule-system.svc:8000
+ url: https://apiservice.kubesphere-scheduling-system.svc:8000

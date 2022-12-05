@@ -24,9 +24,9 @@ import (
 	"k8s.io/client-go/discovery"
 	fakediscovery "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/testing"
-	clientset "kubesphere.io/schedule/pkg/client/clientset/versioned"
-	schedulev1alpha1 "kubesphere.io/schedule/pkg/client/clientset/versioned/typed/schedule/v1alpha1"
-	fakeschedulev1alpha1 "kubesphere.io/schedule/pkg/client/clientset/versioned/typed/schedule/v1alpha1/fake"
+	clientset "kubesphere.io/scheduling/pkg/client/clientset/versioned"
+	schedulev1alpha1 "kubesphere.io/scheduling/pkg/client/clientset/versioned/typed/schedule/v1alpha1"
+	fakeschedulev1alpha1 "kubesphere.io/scheduling/pkg/client/clientset/versioned/typed/schedule/v1alpha1/fake"
 )
 
 // NewSimpleClientset returns a clientset that will respond with the provided objects.

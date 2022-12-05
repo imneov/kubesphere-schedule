@@ -26,8 +26,8 @@ import (
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	rest "k8s.io/client-go/rest"
-	v1alpha1 "kubesphere.io/schedule/api/schedule/v1alpha1"
-	scheme "kubesphere.io/schedule/pkg/client/clientset/versioned/scheme"
+	v1alpha1 "kubesphere.io/scheduling/api/schedule/v1alpha1"
+	scheme "kubesphere.io/scheduling/pkg/client/clientset/versioned/scheme"
 )
 
 // AnalysisTasksGetter has a method to return a AnalysisTaskInterface.

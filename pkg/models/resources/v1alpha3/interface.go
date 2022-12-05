@@ -24,8 +24,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 
-	"kubesphere.io/schedule/api"
-	"kubesphere.io/schedule/pkg/apiserver/query"
+	"kubesphere.io/scheduling/api"
+	"kubesphere.io/scheduling/pkg/apiserver/query"
 )
 
 type Interface interface {
